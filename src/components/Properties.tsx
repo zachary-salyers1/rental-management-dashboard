@@ -1,19 +1,51 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import AddPropertyModal from './AddPropertyModal'
 
-const Properties: React.FC = () => {
-  const properties = [
-    { name: 'Lakeside Retreat', type: 'House', location: 'Lake Tahoe, CA', bedrooms: 3, bathrooms: 2, maxGuests: 8, pricePerNight: 250, assignedGuests: 1 },
-    { name: 'Downtown Loft', type: 'Apartment', location: 'San Francisco, CA', bedrooms: 1, bathrooms: 1, maxGuests: 2, pricePerNight: 150, assignedGuests: 1 },
-    { name: 'Mountain View Cabin', type: 'Cabin', location: 'Aspen, CO', bedrooms: 2, bathrooms: 1, maxGuests: 4, pricePerNight: 200, assignedGuests: 1 },
-  ]
+interface PropertiesProps {
+  properties: any[]
+  setProperties: React.Dispatch<React.SetStateAction<any[]>>
+}
+
+const Properties: React.FC<PropertiesProps> = ({ properties, setProperties }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingProperty, setEditingProperty] = useState<number | null>(null)
+
+  const handleAddProperty = (newProperty: any) => {
+    setProperties([...properties, newProperty])
+  }
+
+  const handleEditProperty = (index: number) => {
+    setEditingProperty(index)
+    setIsModalOpen(true)
+  }
+
+  const handleUpdateProperty = (updatedProperty: any) => {
+    const newProperties = properties.map((property, index) => 
+      index === editingProperty ? updatedProperty : property
+    )
+    setProperties(newProperties)
+    setEditingProperty(null)
+  }
+
+  const handleDeleteProperty = (index: number) => {
+    const newProperties = properties.filter((_, i) => i !== index)
+    setProperties(newProperties)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setEditingProperty(null)
+  }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-primary">Property Management</h2>
-        <button className="bg-accent text-white px-4 py-2 rounded">+ Add Property</button>
+        <button onClick={() => setIsModalOpen(true)} className="bg-accent text-white px-4 py-2 rounded">
+          + Add Property
+        </button>
       </div>
       <div className="bg-card-bg rounded shadow overflow-x-auto">
         <table className="w-full">
@@ -42,14 +74,21 @@ const Properties: React.FC = () => {
                 <td className="p-2 text-foreground">${property.pricePerNight}</td>
                 <td className="p-2 text-foreground">{property.assignedGuests}</td>
                 <td className="p-2">
-                  <button className="mr-2 text-accent">Edit</button>
-                  <button className="text-red-500">Delete</button>
+                  <button onClick={() => handleEditProperty(index)} className="mr-2 text-accent">Edit</button>
+                  <button onClick={() => handleDeleteProperty(index)} className="text-red-500">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <AddPropertyModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onAddProperty={handleAddProperty}
+        onUpdateProperty={handleUpdateProperty}
+        editingProperty={editingProperty !== null ? properties[editingProperty] : null}
+      />
     </div>
   )
 }
