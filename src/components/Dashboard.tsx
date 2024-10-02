@@ -1,15 +1,54 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
-const Overview = dynamic(() => import('./Overview.tsx'), { ssr: false })
-const Properties = dynamic(() => import('./Properties.tsx'), { ssr: false })
-const Guests = dynamic(() => import('./Guests.tsx'), { ssr: false })
-const Calendar = dynamic(() => import('./Calendar.tsx'), { ssr: false })
+const Overview = dynamic(() => import('./Overview'), { ssr: false })
+const Properties = dynamic(() => import('./Properties'), { ssr: false })
+const Guests = dynamic(() => import('./Guests'), { ssr: false })
+const Calendar = dynamic(() => import('./Calendar'), { ssr: false })
+
+interface Booking {
+  id: number
+  title: string
+  start: Date
+  end: Date
+  property: string
+}
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview')
+  const [properties, setProperties] = useState<any[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
+
+  useEffect(() => {
+    // Fetch bookings data here
+    // This is a mock implementation. Replace with actual API call.
+    const mockBookings: Booking[] = [
+      {
+        id: 1,
+        title: 'Booking 1',
+        start: new Date(2023, 8, 15),
+        end: new Date(2023, 8, 20),
+        property: 'Lakeside Retreat'
+      },
+      {
+        id: 2,
+        title: 'Booking 2',
+        start: new Date(2023, 8, 18),
+        end: new Date(2023, 8, 25),
+        property: 'Mountain View Cabin'
+      },
+      {
+        id: 3,
+        title: 'Booking 3',
+        start: new Date(2023, 8, 22),
+        end: new Date(2023, 8, 24),
+        property: 'Downtown Loft'
+      }
+    ]
+    setBookings(mockBookings)
+  }, [])
 
   return (
     <div className="p-6 bg-background text-foreground">
@@ -41,9 +80,9 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
       {activeTab === 'overview' && <Overview />}
-      {activeTab === 'properties' && <Properties />}
+      {activeTab === 'properties' && <Properties properties={properties} setProperties={setProperties} />}
       {activeTab === 'guests' && <Guests />}
-      {activeTab === 'calendar' && <Calendar />}
+      {activeTab === 'calendar' && <Calendar bookings={bookings} />}
     </div>
   )
 }

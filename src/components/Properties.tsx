@@ -4,11 +4,11 @@ import React, { useState } from 'react'
 import AddPropertyModal from './AddPropertyModal'
 
 interface PropertiesProps {
-  properties: any[]
+  properties: any[] | undefined
   setProperties: React.Dispatch<React.SetStateAction<any[]>>
 }
 
-const Properties: React.FC<PropertiesProps> = ({ properties, setProperties }) => {
+const Properties: React.FC<PropertiesProps> = ({ properties = [], setProperties }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProperty, setEditingProperty] = useState<number | null>(null)
 
@@ -63,22 +63,30 @@ const Properties: React.FC<PropertiesProps> = ({ properties, setProperties }) =>
             </tr>
           </thead>
           <tbody>
-            {properties.map((property, index) => (
-              <tr key={index} className="border-b border-gray-100">
-                <td className="p-2 text-foreground">{property.name}</td>
-                <td className="p-2 text-foreground">{property.type}</td>
-                <td className="p-2 text-foreground">{property.location}</td>
-                <td className="p-2 text-foreground">{property.bedrooms}</td>
-                <td className="p-2 text-foreground">{property.bathrooms}</td>
-                <td className="p-2 text-foreground">{property.maxGuests}</td>
-                <td className="p-2 text-foreground">${property.pricePerNight}</td>
-                <td className="p-2 text-foreground">{property.assignedGuests}</td>
-                <td className="p-2">
-                  <button onClick={() => handleEditProperty(index)} className="mr-2 text-accent">Edit</button>
-                  <button onClick={() => handleDeleteProperty(index)} className="text-red-500">Delete</button>
+            {properties && properties.length > 0 ? (
+              properties.map((property, index) => (
+                <tr key={index} className="border-b border-gray-100">
+                  <td className="p-2 text-foreground">{property.name}</td>
+                  <td className="p-2 text-foreground">{property.type}</td>
+                  <td className="p-2 text-foreground">{property.location}</td>
+                  <td className="p-2 text-foreground">{property.bedrooms}</td>
+                  <td className="p-2 text-foreground">{property.bathrooms}</td>
+                  <td className="p-2 text-foreground">{property.maxGuests}</td>
+                  <td className="p-2 text-foreground">${property.pricePerNight}</td>
+                  <td className="p-2 text-foreground">{property.assignedGuests}</td>
+                  <td className="p-2">
+                    <button onClick={() => handleEditProperty(index)} className="mr-2 text-accent">Edit</button>
+                    <button onClick={() => handleDeleteProperty(index)} className="text-red-500">Delete</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={9} className="p-2 text-center text-secondary">
+                  No properties available.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

@@ -1,37 +1,51 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar'
+import moment from 'moment'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-const Calendar: React.FC = () => {
-  const bookings = [
-    { property: 'Lakeside Retreat', checkIn: '9/15/2023', checkOut: '9/20/2023' },
-    { property: 'Mountain View Cabin', checkIn: '9/18/2023', checkOut: '9/25/2023' },
-    { property: 'Downtown Loft', checkIn: '9/22/2023', checkOut: '9/24/2023' },
-  ]
+// Setup the localizer for BigCalendar
+const localizer = momentLocalizer(moment)
+
+interface CalendarProps {
+  bookings: Array<{
+    id: number
+    title: string
+    start: Date
+    end: Date
+    property: string
+  }>
+}
+
+const Calendar: React.FC<CalendarProps> = ({ bookings }) => {
+  const [view, setView] = useState(Views.MONTH)
+  const [date, setDate] = useState(new Date())
+
+  const onNavigate = (newDate: Date) => {
+    setDate(newDate)
+  }
+
+  const onView = (newView: any) => {
+    setView(newView)
+  }
 
   return (
-    <div>
+    <div className="h-[600px]"> {/* Adjust the height as needed */}
       <h2 className="text-xl font-semibold mb-4">Booking Calendar</h2>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white p-4 rounded shadow">
-          {/* Placeholder for calendar component */}
-          <p>Calendar component goes here</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold mb-4">Bookings</h3>
-          <ul>
-            {bookings.map((booking, index) => (
-              <li key={index} className="mb-2">
-                <strong>{booking.property}</strong>
-                <br />
-                Check-in: {booking.checkIn}
-                <br />
-                Check-out: {booking.checkOut}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <BigCalendar
+        localizer={localizer}
+        events={bookings}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: '100%' }}
+        view={view}
+        onView={onView}
+        date={date}
+        onNavigate={onNavigate}
+        toolbar={true}
+        views={['month', 'week', 'day']}
+      />
     </div>
   )
 }
